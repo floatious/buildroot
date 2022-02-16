@@ -1,7 +1,7 @@
-From 448707ebd1bedc78bbf80fb94f9dd00c0b8fe354 Mon Sep 17 00:00:00 2001
+From 2252f41ca79bb12387272d5ee4af59d1a91f8aca Mon Sep 17 00:00:00 2001
 From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Date: Fri, 21 Jan 2022 15:26:01 +0900
-Subject: [PATCH 3/5] k210: dts: fix fpioa node
+Date: Wed, 9 Feb 2022 15:11:13 +0900
+Subject: [PATCH 4/8] k210: dts: fix fpioa node
 
 Linux kernel fpioa pinctrl driver expects the sysctl phandle and the
 power bit offset of the fpioa device to be specified as a single
@@ -12,6 +12,7 @@ requirements. This new property is parsed using the existing function
 dev_read_phandle_with_args().
 
 Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
 ---
  arch/riscv/dts/k210.dtsi       |  3 +--
  drivers/pinctrl/pinctrl-k210.c | 19 ++++++++++++++-----
@@ -73,5 +74,5 @@ index bb5153c673..63084ae837 100644
  	debug("%s: fpioa = %p sysctl = %p power offset = %x\n", __func__,
  	      priv->fpioa, (void *)priv->sysctl->ranges[0].start,
 -- 
-2.34.1
+2.35.1
 

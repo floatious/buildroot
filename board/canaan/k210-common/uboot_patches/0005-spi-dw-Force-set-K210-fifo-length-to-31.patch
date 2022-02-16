@@ -1,7 +1,7 @@
-From fb9df4166d1a635a36e4478ca4d9cfe9227c413e Mon Sep 17 00:00:00 2001
+From f8ffb69562c0cfc8258c19f42a4c8f1745420024 Mon Sep 17 00:00:00 2001
 From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Date: Sat, 22 Jan 2022 13:17:05 +0900
-Subject: [PATCH 4/5] drivers: designware_spi: Force set K210 fifo length to 31
+Date: Wed, 9 Feb 2022 15:11:14 +0900
+Subject: [PATCH 5/8] spi: dw: Force set K210 fifo length to 31
 
 The Canaan Kendryte K210 SoC DW apb_ssi v4 spi controller is documented
 to have a 32 word deep TX and RX FIFO, which spi_hw_init() detects.
@@ -10,12 +10,13 @@ RX FIFO overrun error occurs. Avoid this problem by force setting
 fifo_len to 31.
 
 Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
 ---
  drivers/spi/designware_spi.c | 16 +++++++++++++++-
  1 file changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/spi/designware_spi.c b/drivers/spi/designware_spi.c
-index 788e5969a4..070dba56f3 100644
+index 9200efced9..f9b19a5ea4 100644
 --- a/drivers/spi/designware_spi.c
 +++ b/drivers/spi/designware_spi.c
 @@ -194,6 +194,20 @@ static int dw_spi_apb_init(struct udevice *bus, struct dw_spi_priv *priv)
@@ -49,5 +50,5 @@ index 788e5969a4..070dba56f3 100644
  	{ .compatible = "intel,stratix10-spi", .data = (ulong)dw_spi_apb_init },
  	{ .compatible = "intel,agilex-spi", .data = (ulong)dw_spi_apb_init },
 -- 
-2.34.1
+2.35.1
 

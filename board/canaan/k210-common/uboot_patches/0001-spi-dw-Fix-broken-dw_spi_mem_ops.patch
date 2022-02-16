@@ -1,7 +1,7 @@
-From 8fe94cc0f71103e6f966921728a63b461bdaf495 Mon Sep 17 00:00:00 2001
+From f0b0550f8065b4c8e829349cb1e2bd83d4fbfe9b Mon Sep 17 00:00:00 2001
 From: Niklas Cassel <niklas.cassel@wdc.com>
-Date: Tue, 8 Feb 2022 22:52:43 +0000
-Subject: [PATCH 5/5] drivers: designware_spi: Fix broken dw_spi_mem_ops()
+Date: Tue, 8 Feb 2022 23:08:22 +0100
+Subject: [PATCH 1/8] spi: dw: Fix broken dw_spi_mem_ops()
 
 The driver is currently using sizeof(op->cmd.opcode) in the op_len
 calculation. Commit d15de623013c ("spi: spi-mem: allow specifying a
@@ -24,16 +24,15 @@ working SPI flash on the canaan k210 board.
 
 Fixes: d15de623013c ("spi: spi-mem: allow specifying a command's extension")
 Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 ---
  drivers/spi/designware_spi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/spi/designware_spi.c b/drivers/spi/designware_spi.c
-index 070dba56f3..f9b19a5ea4 100644
+index 742121140d..fc22f540fe 100644
 --- a/drivers/spi/designware_spi.c
 +++ b/drivers/spi/designware_spi.c
-@@ -586,7 +586,7 @@ static int dw_spi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
+@@ -572,7 +572,7 @@ static int dw_spi_exec_op(struct spi_slave *slave, const struct spi_mem_op *op)
  	int pos, i, ret = 0;
  	struct udevice *bus = slave->dev->parent;
  	struct dw_spi_priv *priv = dev_get_priv(bus);
@@ -43,5 +42,5 @@ index 070dba56f3..f9b19a5ea4 100644
  	u32 cr0;
  
 -- 
-2.34.1
+2.35.1
 

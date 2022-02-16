@@ -1,7 +1,7 @@
-From 2db9d7b71516e8895463c3a0923b5fec690b5b4f Mon Sep 17 00:00:00 2001
+From 03ab178919e5bb5351aa7dbc29fd613d54a9d209 Mon Sep 17 00:00:00 2001
 From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Date: Fri, 21 Jan 2022 14:39:41 +0900
-Subject: [PATCH 1/5] k210: use the board vendor name rather than the marketing
+Date: Wed, 9 Feb 2022 15:11:11 +0900
+Subject: [PATCH 2/8] k210: use the board vendor name rather than the marketing
  name
 
 "kendryte" is the marketing name for the K210 RISC-V SoC produced by
@@ -13,6 +13,7 @@ Linux kernel DTS and drivers, making uboot device tree usable by the
 kernel.
 
 Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
 ---
  MAINTAINERS                                   | 10 +-
  arch/riscv/dts/k210-maix-bit.dts              |  3 +-
@@ -37,10 +38,10 @@ Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
  rename include/{kendryte => k210}/pll.h (100%)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 54985aef48..81a1b2cbfa 100644
+index 1c98029754..6347b57d67 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -1107,11 +1107,11 @@ F:	tools/prelink-riscv.c
+@@ -1117,11 +1117,11 @@ F:	tools/prelink-riscv.c
  RISC-V KENDRYTE
  M:	Sean Anderson <seanga2@gmail.com>
  S:	Maintained
@@ -667,7 +668,7 @@ index 09d51ca676..bb5153c673 100644
  };
  
 diff --git a/drivers/spi/designware_spi.c b/drivers/spi/designware_spi.c
-index 742121140d..788e5969a4 100644
+index fc22f540fe..9200efced9 100644
 --- a/drivers/spi/designware_spi.c
 +++ b/drivers/spi/designware_spi.c
 @@ -758,8 +758,8 @@ static const struct udevice_id dw_spi_ids[] = {
@@ -712,5 +713,5 @@ index f55379f336..a0cc84c396 100644
  
  static int dm_test_k210_pll_calc_config(u32 rate, u32 rate_in,
 -- 
-2.34.1
+2.35.1
 

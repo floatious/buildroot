@@ -1,0 +1,34 @@
+From 996061e3459eb5d8c29251b42cfc57e27e2a029e Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <niklas.cassel@wdc.com>
+Date: Thu, 24 Mar 2022 20:55:57 +0100
+Subject: [PATCH] elf2flt.ld.in: align the output .data section to the next 32
+ byte boundary
+
+riscv only supports loading text and data contiguously.
+
+Additionally, the kernel binfmt_flat loader will always load the .data
+section to an offset aligned to 32 bytes.
+
+Therefore, ensure that the .data section is aligned to a 32 byte boundary.
+
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+---
+ elf2flt.ld.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/elf2flt.ld.in b/elf2flt.ld.in
+index 20230d5..df6f351 100644
+--- a/elf2flt.ld.in
++++ b/elf2flt.ld.in
+@@ -59,7 +59,7 @@ W_RODAT		*(.gnu.linkonce.r*)
+ 	. = ALIGN(0x20) ;
+ 	@SYMBOL_PREFIX@_etext = . ;
+ 
+-	.data : {
++	.data ALIGN(0x20): {
+ 		. = ALIGN(0x4) ;
+ 		@SYMBOL_PREFIX@_sdata = . ;
+ 		@SYMBOL_PREFIX@__data_start = . ;
+-- 
+2.35.1
+

@@ -1,0 +1,29 @@
+From 11a1ffd864f6399867a67adbd2221750a5fd7087 Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <niklas.cassel@wdc.com>
+Date: Fri, 25 Mar 2022 15:00:15 +0100
+Subject: [PATCH] lol
+
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+---
+ ld-elf2flt.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/ld-elf2flt.c b/ld-elf2flt.c
+index 1809d8a..e11ef64 100644
+--- a/ld-elf2flt.c
++++ b/ld-elf2flt.c
+@@ -325,11 +325,6 @@ static int do_final_link(void)
+ 	}
+ 
+ 	if (streq(TARGET_CPU, "riscv64")) {
+-		/* The .got section must come before the .got.plt section. */
+-		append_sed(&sed, "(.got.plt)", "(.got.tmp)");
+-		append_sed(&sed, "(.got.plt)", "(.got)");
+-		append_sed(&sed, "(.got.tmp)", "(.got.plt)");
+-
+ 		/* The global pointer symbol is defined after the GOT. */
+ 		append_sed(&sed, "^RISCV_GP:", "");
+ 	} else {
+-- 
+2.35.1
+

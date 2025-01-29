@@ -21,3 +21,17 @@ if [ -e ${TARGET_DIR}/etc/fstab ]; then
     grep -qE '^tag_modules' ${TARGET_DIR}/etc/fstab || \
 	echo 'tag_modules	/lib/modules	9p	trans=virtio,version=9p2000.L' >> ${TARGET_DIR}/etc/fstab
 fi
+
+# Authorize our SSH public keys by default
+if [ ! -e ${TARGET_DIR}/root/.ssh/authorized_keys ]; then
+    mkdir -p ${TARGET_DIR}/root/.ssh
+    if [ -e ~/.ssh/id_rsa.pub ]; then
+	cat ~/.ssh/id_rsa.pub >> ${TARGET_DIR}/root/.ssh/authorized_keys
+    fi
+    if [ -e ~/.ssh/id_ecdsa.pub ]; then
+	cat ~/.ssh/id_ecdsa.pub >> ${TARGET_DIR}/root/.ssh/authorized_keys
+    fi
+    if [ -e ~/.ssh/id_ed25519.pub ]; then
+	cat ~/.ssh/id_ed25519.pub >> ${TARGET_DIR}/root/.ssh/authorized_keys
+    fi
+fi

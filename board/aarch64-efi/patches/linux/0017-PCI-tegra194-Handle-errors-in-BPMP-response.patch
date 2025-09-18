@@ -1,0 +1,86 @@
+From 5b4f5cc4af77b60d1f0477dd52f563f33c7ac73c Mon Sep 17 00:00:00 2001
+From: Vidya Sagar <vidyas@nvidia.com>
+Date: Thu, 11 Sep 2025 14:27:29 +0200
+Subject: [PATCH 17/17] PCI: tegra194: Handle errors in BPMP response
+
+The return value from tegra_bpmp_transfer() indicates the success or
+failure of the IPC transaction with BPMP. If the transaction
+succeeded, we also need to check the actual command's result code.
+
+If a host deasserts PERST without providing a refclock, enabling the PHY
+(via a tegra_bpmp_transfer() call) will silently fail, however, because
+we are lacking error handling, pex_ep_event_pex_rst_deassert() will still
+set pcie->ep_state = EP_STATE_ENABLED.
+
+Because of this, any succeeding PERST deassertion will incorrectly be a
+no-op (because of the pcie->ep_state == EP_STATE_ENABLED check in
+pex_ep_event_pex_rst_deassert()), even if the host does provide a refclock
+during the succeeding PERST deassertion.
+
+Add error handling to tegra_bpmp_transfer(), such that the pcie->ep_state
+can not get out of sync with reality, which will incorrectly cause the
+driver to think that it has been successfully initialized, which
+incorrectly makes future calls to pex_ep_event_pex_rst_deassert() a no-op.
+
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+[cassel: improve commit log]
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ drivers/pci/controller/dwc/pcie-tegra194.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 7eb48cc13648e..c4265b3f72048 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -1223,6 +1223,7 @@ static int tegra_pcie_bpmp_set_ctrl_state(struct tegra_pcie_dw *pcie,
+ 	struct mrq_uphy_response resp;
+ 	struct tegra_bpmp_message msg;
+ 	struct mrq_uphy_request req;
++	int err;
+ 
+ 	/*
+ 	 * Controller-5 doesn't need to have its state set by BPMP-FW in
+@@ -1245,7 +1246,13 @@ static int tegra_pcie_bpmp_set_ctrl_state(struct tegra_pcie_dw *pcie,
+ 	msg.rx.data = &resp;
+ 	msg.rx.size = sizeof(resp);
+ 
+-	return tegra_bpmp_transfer(pcie->bpmp, &msg);
++	err = tegra_bpmp_transfer(pcie->bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
+ }
+ 
+ static int tegra_pcie_bpmp_set_pll_state(struct tegra_pcie_dw *pcie,
+@@ -1254,6 +1261,7 @@ static int tegra_pcie_bpmp_set_pll_state(struct tegra_pcie_dw *pcie,
+ 	struct mrq_uphy_response resp;
+ 	struct tegra_bpmp_message msg;
+ 	struct mrq_uphy_request req;
++	int err;
+ 
+ 	memset(&req, 0, sizeof(req));
+ 	memset(&resp, 0, sizeof(resp));
+@@ -1273,7 +1281,13 @@ static int tegra_pcie_bpmp_set_pll_state(struct tegra_pcie_dw *pcie,
+ 	msg.rx.data = &resp;
+ 	msg.rx.size = sizeof(resp);
+ 
+-	return tegra_bpmp_transfer(pcie->bpmp, &msg);
++	err = tegra_bpmp_transfer(pcie->bpmp, &msg);
++	if (err)
++		return err;
++	if (msg.rx.ret)
++		return -EINVAL;
++
++	return 0;
+ }
+ 
+ static void tegra_pcie_downstream_dev_to_D0(struct tegra_pcie_dw *pcie)
+-- 
+2.51.0
+

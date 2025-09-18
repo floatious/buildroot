@@ -1,0 +1,42 @@
+From c83a69f8e5a1367375612216bef207f7c7a0a02c Mon Sep 17 00:00:00 2001
+From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Date: Fri, 12 Sep 2025 20:17:03 +0900
+Subject: [PATCH 11/17] nvmet: pci-epf: fix DMA channel debug print
+
+Currently, nvmet_pci_epf_init_dma() has two dev_dbg() calls intended to
+print debug information about the DMA channels for RX and TX. However,
+both calls mistakenly are made for the TX channel. Fix it by referreing
+to 'nvme_epf->rx_chan' and 'nvme_epf->tx_chan' and instead of the local
+variable 'chan'.
+
+Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+---
+ drivers/nvme/target/pci-epf.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/nvme/target/pci-epf.c b/drivers/nvme/target/pci-epf.c
+index 9c5b0f78ce8df..f858a6c9d7cb9 100644
+--- a/drivers/nvme/target/pci-epf.c
++++ b/drivers/nvme/target/pci-epf.c
+@@ -320,12 +320,14 @@ static void nvmet_pci_epf_init_dma(struct nvmet_pci_epf *nvme_epf)
+ 	nvme_epf->dma_enabled = true;
+ 
+ 	dev_dbg(dev, "Using DMA RX channel %s, maximum segment size %u B\n",
+-		dma_chan_name(chan),
+-		dma_get_max_seg_size(dmaengine_get_dma_device(chan)));
++		dma_chan_name(nvme_epf->dma_rx_chan),
++		dma_get_max_seg_size(dmaengine_get_dma_device(nvme_epf->
++							      dma_rx_chan)));
+ 
+ 	dev_dbg(dev, "Using DMA TX channel %s, maximum segment size %u B\n",
+-		dma_chan_name(chan),
+-		dma_get_max_seg_size(dmaengine_get_dma_device(chan)));
++		dma_chan_name(nvme_epf->dma_tx_chan),
++		dma_get_max_seg_size(dmaengine_get_dma_device(nvme_epf->
++							      dma_tx_chan)));
+ 
+ 	return;
+ 
+-- 
+2.51.0
+

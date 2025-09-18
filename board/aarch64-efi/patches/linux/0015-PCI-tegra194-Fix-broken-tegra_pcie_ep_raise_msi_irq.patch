@@ -1,0 +1,51 @@
+From 783e6125ffd49f4b6ae0b09960e7deec0bc1dba5 Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <cassel@kernel.org>
+Date: Fri, 19 Sep 2025 17:04:21 +0200
+Subject: [PATCH 15/17] PCI: tegra194: Fix broken tegra_pcie_ep_raise_msi_irq()
+
+The pci_epc_raise_irq() supplies a MSI or MSI-X interrupt number in range
+(1-N), see kdoc for pci_epc_raise_irq().
+
+Thus, for MSI pci_epc_raise_irq() will supply interrupt number 1-32.
+
+Convert the interrupt number to an MSI vector.
+
+With this, the PCI endpoint kselftest test case MSI_TEST passes.
+
+Also, set msi_capable to true, as the driver obviously supports MSI.
+This helps pci_endpoint_test to use the optimal IRQ type when using
+PCITEST_IRQ_TYPE_AUTO.
+
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ drivers/pci/controller/dwc/pcie-tegra194.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 7c295ec6f0f16..63d310e5335f4 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -1969,10 +1969,10 @@ static int tegra_pcie_ep_raise_intx_irq(struct tegra_pcie_dw *pcie, u16 irq)
+ 
+ static int tegra_pcie_ep_raise_msi_irq(struct tegra_pcie_dw *pcie, u16 irq)
+ {
+-	if (unlikely(irq > 31))
++	if (unlikely(irq > 32))
+ 		return -EINVAL;
+ 
+-	appl_writel(pcie, BIT(irq), APPL_MSI_CTRL_1);
++	appl_writel(pcie, BIT(irq - 1), APPL_MSI_CTRL_1);
+ 
+ 	return 0;
+ }
+@@ -2012,6 +2012,7 @@ static int tegra_pcie_ep_raise_irq(struct dw_pcie_ep *ep, u8 func_no,
+ 
+ static const struct pci_epc_features tegra_pcie_epc_features = {
+ 	.linkup_notifier = true,
++	.msi_capable = true,
+ 	.bar[BAR_0] = { .type = BAR_FIXED, .fixed_size = SZ_1M,
+ 			.only_64bit = true, },
+ 	.bar[BAR_1] = { .type = BAR_RESERVED, },
+-- 
+2.51.0
+

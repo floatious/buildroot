@@ -1,0 +1,39 @@
+From 416efcb855292786598356d792e73be42855840e Mon Sep 17 00:00:00 2001
+From: Vidya Sagar <vidyas@nvidia.com>
+Date: Fri, 14 Oct 2022 00:08:44 +0530
+Subject: [PATCH 08/17] UBUNTU: SAUCE: PCI: tegra194: Remove IRQF_ONESHOT flag
+ during Endpoint interrupt registration
+
+BugLink: https://bugs.launchpad.net/bugs/2001557
+
+Tegra PCIe endpoint has a common interrupt that notifies hardware events
+like link up, LTR send, etc. DMA completion event is also notified over
+this interrupt. Remove IRQF_ONESHOT flag from interrupt registration and
+allow DMA driver to share this interrupt.
+
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+Signed-off-by: Kartik <kkartik@nvidia.com>
+Acked-by: Brad Figg <bfigg@nvidia.com>
+Acked-by: Jacob Martin <jacob.martin@canonical.com>
+Acked-by: Ian May <ian.may@canonical.com>
+Signed-off-by: Brad Figg <bfigg@nvidia.com>
+---
+ drivers/pci/controller/dwc/pcie-tegra194.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 3aca0ebe18d28..34abb3faa5cbd 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -2270,7 +2270,7 @@ static int tegra_pcie_dw_probe(struct platform_device *pdev)
+ 		ret = devm_request_threaded_irq(dev, pp->irq,
+ 						tegra_pcie_ep_hard_irq,
+ 						tegra_pcie_ep_irq_thread,
+-						IRQF_SHARED | IRQF_ONESHOT,
++						IRQF_SHARED,
+ 						"tegra-pcie-ep-intr", pcie);
+ 		if (ret) {
+ 			dev_err(dev, "Failed to request IRQ %d: %d\n", pp->irq,
+-- 
+2.51.0
+

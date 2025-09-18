@@ -1,0 +1,31 @@
+From c709e8e907f020a63e6b5173f090030abb56eed3 Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <cassel@kernel.org>
+Date: Thu, 18 Sep 2025 15:44:10 +0200
+Subject: [PATCH 07/17] arm64: tegra: specify eDMA base address
+
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+index 9a34159e25f4c..c4455f5ab8256 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+@@ -4881,10 +4881,11 @@ pcie-ep@14160000 {
+ 			compatible = "nvidia,tegra234-pcie-ep";
+ 			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_PCIEX4BB>;
+ 			reg = <0x00 0x14160000 0x0 0x00020000     /* appl registers (128K)      */
+-				0x00 0x36040000 0x0 0x00040000    /* iATU_DMA reg space (256K)  */
++				0x00 0x36040000 0x0 0x00020000    /* iATU reg space (128K)  */
++				0x00 0x36060000 0x0 0x00020000    /* eDMA reg space (128K)  */
+ 				0x00 0x36080000 0x0 0x00040000    /* DBI space (256K)           */
+ 				0x21 0x40000000 0x3 0x00000000>;  /* Address Space (12G)        */
+-			reg-names = "appl", "atu_dma", "dbi", "addr_space";
++			reg-names = "appl", "atu_dma", "dma", "dbi", "addr_space";
+ 			num-lanes = <4>;
+ 			clocks = <&bpmp TEGRA234_CLK_PEX0_C4_CORE>;
+ 			clock-names = "core";
+-- 
+2.51.0
+

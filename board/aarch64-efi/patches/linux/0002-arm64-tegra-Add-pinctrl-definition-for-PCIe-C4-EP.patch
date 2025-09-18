@@ -1,0 +1,59 @@
+From ab3cee2fabeb98f52ec98fe203b380fa09e3cd1d Mon Sep 17 00:00:00 2001
+From: Gautham Srinivasan <gauthams@nvidia.com>
+Date: Thu, 21 Aug 2025 17:30:41 +0900
+Subject: [PATCH 02/17] arm64: tegra: Add pinctrl definition for PCIe C4 EP
+
+Commit 0580286d0d22 ("arm64: tegra: Add Tegra234 PCIe C4 EP definition")
+added the device tree entry "pcie-ep@14160000" for C4 endpoint. However,
+it missed pinctrl definition. Without the pinctl definition, the C4
+endpoint of Jetson Orin Nano does not work. Add the missing definition.
+
+Signed-off-by: Gautham Srinivasan <gauthams@nvidia.com>
+[cassel: Add to the existing nodes instead of creating new ones.
+Remove non-existing nvidia,lpdr property. Rename node to match dtschema.]
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+index df034dbb82853..2df89ad9ffdd0 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+@@ -9,6 +9,7 @@
+ #include <dt-bindings/power/tegra234-powergate.h>
+ #include <dt-bindings/reset/tegra234-reset.h>
+ #include <dt-bindings/thermal/tegra234-bpmp-thermal.h>
++#include <dt-bindings/pinctrl/pinctrl-tegra.h>
+ 
+ / {
+ 	compatible = "nvidia,tegra234";
+@@ -127,6 +128,16 @@ gpio: gpio@2200000 {
+ 		pinmux: pinmux@2430000 {
+ 			compatible = "nvidia,tegra234-pinmux";
+ 			reg = <0x0 0x2430000 0x0 0x19100>;
++
++			pex_rst_c4_in_state: pinmux-pex-rst-c4-in {
++				pex_rst {
++					nvidia,pins = "pex_l4_rst_n_pl1";
++					nvidia,function = "rsvd1";
++					nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++					nvidia,tristate = <TEGRA_PIN_ENABLE>;
++					nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				};
++			};
+ 		};
+ 
+ 		gpcdma: dma-controller@2600000 {
+@@ -4881,6 +4892,8 @@ pcie-ep@14160000 {
+ 			       <&bpmp TEGRA234_RESET_PEX0_CORE_4>;
+ 			reset-names = "apb", "core";
+ 
++			pinctrl-names = "default";
++			pinctrl-0 = <&pex_rst_c4_in_state>;
+ 			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;  /* controller interrupt */
+ 			interrupt-names = "intr";
+ 			nvidia,bpmp = <&bpmp 4>;
+-- 
+2.51.0
+

@@ -1,0 +1,29 @@
+From 21c346fd58fc6d8b1c91a2af0fa94e7dcde5daf6 Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <cassel@kernel.org>
+Date: Thu, 18 Sep 2025 15:32:52 +0200
+Subject: [PATCH 06/17] arm64: tegra: specify eDMA irq
+
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ arch/arm64/boot/dts/nvidia/tegra234.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+index 2df89ad9ffdd0..9a34159e25f4c 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
+@@ -4894,8 +4894,9 @@ pcie-ep@14160000 {
+ 
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&pex_rst_c4_in_state>;
+-			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;  /* controller interrupt */
+-			interrupt-names = "intr";
++			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,  /* controller interrupt */
++				     <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;  /* eDMA is using same IRQ */
++			interrupt-names = "intr", "dma";
+ 			nvidia,bpmp = <&bpmp 4>;
+ 			nvidia,enable-ext-refclk;
+ 			nvidia,aspm-cmrt-us = <60>;
+-- 
+2.51.0
+

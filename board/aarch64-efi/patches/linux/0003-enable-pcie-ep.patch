@@ -1,0 +1,35 @@
+From f0613815f75ea4833b9d2e7e0a6341a5bb41f148 Mon Sep 17 00:00:00 2001
+From: Niklas Cassel <cassel@kernel.org>
+Date: Tue, 19 Aug 2025 12:57:55 +0200
+Subject: [PATCH 03/17] enable pcie-ep
+
+Signed-off-by: Niklas Cassel <cassel@kernel.org>
+---
+ arch/arm64/boot/dts/nvidia/tegra234-p3768-0000+p3767.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3768-0000+p3767.dtsi b/arch/arm64/boot/dts/nvidia/tegra234-p3768-0000+p3767.dtsi
+index 41821354bbdae..bfd4f2541b6af 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234-p3768-0000+p3767.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra234-p3768-0000+p3767.dtsi
+@@ -177,7 +177,7 @@ pcie@14100000 {
+ 
+ 		/* C4 - M.2 Key-M */
+ 		pcie@14160000 {
+-			status = "okay";
++			status = "disabled";
+ 
+ 			vddio-pex-ctl-supply = <&vdd_1v8_ao>;
+ 
+@@ -187,6 +187,8 @@ pcie@14160000 {
+ 		};
+ 
+ 		pcie-ep@14160000 {/* C4 - End Point */
++			status = "okay";
++
+ 			phys = <&p2u_hsio_4>, <&p2u_hsio_5>, <&p2u_hsio_6>,
+ 					<&p2u_hsio_7>;
+ 			phy-names = "p2u-0", "p2u-1", "p2u-2", "p2u-3";
+-- 
+2.51.0
+
